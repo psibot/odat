@@ -2,19 +2,19 @@
 #Constants
 ALL_IS_OK=0
 #Connection information
-SERVER=192.168.56.102
+SERVER=213.233.177.152
 SID=ORCL
 USER="SYS"
 PASSWORD='oracle'
 #OPTIONS
 VERBOSE='-vv' #'> /dev/null'
-ODATBIN='./odat.py'
+ODATBIN='python3 odat.py'
 
 
 tests=( "$ODATBIN all -s $SERVER"
 	"$ODATBIN all -s $SERVER --accounts-file=./accounts/accounts_small.txt --sid-charset '01' --sids-max-size=2"
 	"$ODATBIN all -s $SERVER --no-alias-like-sid --sids-file=./sids.txt"
-	"$ODATBIN all -s $SERVER -d $SID" 
+	"$ODATBIN all -s $SERVER -d $SID"
 	"$ODATBIN all -s $SERVER -d $SID -U $USER -P $PASSWORD"
 	"$ODATBIN all -s $SERVER -d $SID -U $USER -P $PASSWORD"
 	"$ODATBIN sidguesser -s $SERVER --sids-max-size=1 --sid-charset='1234'"
