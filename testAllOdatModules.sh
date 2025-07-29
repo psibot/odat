@@ -2,10 +2,10 @@
 #Constants
 ALL_IS_OK=0
 #Connection information
-SERVER=213.233.177.152
+SERVER=15.56.2.36
 SID=ORCL
-USER="SYS"
-PASSWORD='oracle'
+USER="DBSNMP"
+PASSWORD='dbsmp'
 #OPTIONS
 VERBOSE='-vv' #'> /dev/null'
 ODATBIN='python3 odat.py'

@@ -271,7 +271,7 @@ jake/passwo4
 je/je
 jg/jg
 jill/passwo2
-jl /jl 
+jl /jl
 jmf/jmf
 jmuser/jmuser
 john/john
@@ -666,3 +666,13 @@ zfa/zfa
 zpb/zpb
 zsa/zsa
 zx/zx
+proddta/proddta
+prodctl/prodctl
+crpctl/crpctl
+crpdta/crpdta
+DBSNMP/DBSNMP
+AMSPROD/AMSPROD
+DBSNMP/dbsnmp
+dbsnmp/dbsnmp
+amsprod/amsprod
+
